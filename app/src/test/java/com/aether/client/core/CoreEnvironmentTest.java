@@ -187,11 +187,15 @@ public class CoreEnvironmentTest {
      * The value sent must be one the core's own parser knows.
      *
      * <p>An unrecognised value becomes masque with no message, so a wrong spelling looks
-     * like a tunnel that came up on the wrong transport.
+     * like a tunnel that came up on the wrong transport. The list is the core's accepted
+     * set plus "smart", which the core resolves on its own.
      */
     @Test
     public void everyProtocolProducesAnEnvironmentTheCoreWillAccept() {
-        java.util.List<String> known = java.util.Arrays.asList("masque", "wg", "gool", "mim");
+        // "smart" is included because it is deliberately forwarded unresolved: the core
+        // resolves it, and it is a value the core's parser knows.
+        java.util.List<String> known =
+                java.util.Arrays.asList("masque", "wg", "gool", "mim", "smart");
         for (String protocol : Protocols.DISPLAY_ORDER) {
             Map<String, String> env = envOf(config().set(Settings.K_PROTOCOL, protocol));
             String base = env.get("AETHER_PROTOCOL");

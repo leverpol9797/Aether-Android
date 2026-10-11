@@ -40,6 +40,18 @@ public interface ConfigSource {
 
     boolean noDataCheck();
 
+    /**
+     * Whether to split the HTTP/2 handshake across fragments.
+     *
+     * <p>Aimed at middleboxes that drop a recognisable initial packet, so it is only ever
+     * worth enabling on a network where plain MASQUE already fails.
+     */
+    boolean h2Fragment();
+
+    String h2FragmentSize();
+
+    String h2FragmentDelay();
+
     boolean routeSniff();
 
     int routeSniffMs();

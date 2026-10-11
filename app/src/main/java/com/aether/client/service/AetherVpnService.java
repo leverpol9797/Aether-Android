@@ -12,6 +12,7 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.aether.client.MainActivity;
 import com.aether.client.core.ConnectionState;
 import com.aether.client.core.CoreProcess;
 import com.aether.client.core.Protocols;
@@ -95,6 +96,15 @@ public class AetherVpnService extends VpnService {
     private Settings settings;
     private android.content.SharedPreferences stateStore;
     private CoreProcess core;
+
+    /**
+     * One stable sink instance for the service's lifetime.
+     *
+     * <p>{@code removeSink} matches by identity, so registering a fresh lambda and
+     * removing {@code this::publishLog} removes nothing. The old sink then keeps
+     * broadcasting log lines into a destroyed service.
+     */
+    private final CoreProcess.LogSink logSink = this::publishLog;
     private ParcelFileDescriptor tunDescriptor;
     private volatile boolean stopping;
     private volatile int sessionGeneration;
@@ -108,7 +118,9 @@ public class AetherVpnService extends VpnService {
         settings = new Settings(this);
         stateStore = getSharedPreferences(STATE_STORE, MODE_PRIVATE);
         core = new CoreProcess(this);
-        core.addSink(this::publishLog);
+        // Named as a field rather than a method reference: removeSink compares by
+        // identity, and a fresh lambda each time would never match what was added.
+        core.addSink(logSink);
         createNotificationChannel();
     }
 
@@ -423,7 +435,11 @@ public class AetherVpnService extends VpnService {
     @Override
     public void onDestroy() {
         disconnect();
-        if (core != null) core.removeSink(this::publishLog);
+        if (core != null) core.removeSink(logSink);
+        if (stateStore != null) {
+            // commit, not apply: this write races the process death it is trying to record.
+            stateStore.edit().putBoolean(KEY_DESIRED_CONNECTED, false).commit();
+        }
         super.onDestroy();
     }
 

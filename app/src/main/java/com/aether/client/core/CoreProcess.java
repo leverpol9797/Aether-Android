@@ -27,8 +27,15 @@ public final class CoreProcess {
     private static final int PORT_READY_TIMEOUT_MS = 30_000;
     private static final int PORT_POLL_MS = 250;
 
+    /**
+     * Receives one line of core output.
+     *
+     * <p>The level comes first because that is how every caller reads a pair: the level
+     * decides the colour, the line carries the content. Passed the other way round it
+     * still compiles as a method reference and silently transposes the arguments.
+     */
     public interface LogSink {
-        void onLine(String line, LogLevel level);
+        void onLine(LogLevel level, String line);
     }
 
     public interface ExitListener {
@@ -110,9 +117,15 @@ public final class CoreProcess {
         return dir;
     }
 
-    /** The extracted, executable core for this device's ABI. */
+    /**
+     * The core executable for this device's ABI.
+     *
+     * <p>It ships as {@code libaether.so} only so the installer unpacks it per ABI and
+     * strips it from the APK on install. It is an ordinary PIE executable, not a shared
+     * library: nothing ever calls into it, and it is run as a program.
+     */
     public File executable() {
-        File nativeDir = context.getApplicationInfo().nativeLibraryDir;
+        File nativeDir = new File(context.getApplicationInfo().nativeLibraryDir);
         return new File(nativeDir, "libaether.so");
     }
 
@@ -300,7 +313,7 @@ public final class CoreProcess {
 
     private void emit(LogLevel level, String line) {
         for (LogSink sink : sinks) {
-            sink.onLine(line, level);
+            sink.onLine(level, line);
         }
     }
 

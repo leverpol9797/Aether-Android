@@ -58,6 +58,9 @@ public class CoreEnvironmentTest {
         @Override public String ech() { return get(Settings.K_ECH, ""); }
         @Override public boolean gateway() { return flag(Settings.K_GATEWAY, false); }
         @Override public boolean noDataCheck() { return flag(Settings.K_NO_DATA_CHECK, false); }
+        @Override public boolean h2Fragment() { return flag(Settings.K_H2_FRAGMENT, false); }
+        @Override public String h2FragmentSize() { return get(Settings.K_H2_FRAGMENT_SIZE, "1-3"); }
+        @Override public String h2FragmentDelay() { return get(Settings.K_H2_FRAGMENT_DELAY, "10-20"); }
         @Override public boolean routeSniff() { return flag(Settings.K_ROUTE_SNIFF, true); }
         @Override public int routeSniffMs() { return number(Settings.K_ROUTE_SNIFF_MS, 300); }
         @Override public int tunMtu() { return number(Settings.K_TUN_MTU, 1360); }
@@ -152,6 +155,32 @@ public class CoreEnvironmentTest {
         Map<String, String> env = envOf(config().set(Settings.K_PROTOCOL, "wg"));
         assertEquals(CoreEnvironment.PUBLIC_SOCKS, env.get("AETHER_SOCKS"));
         assertEquals(CoreEnvironment.PUBLIC_HTTP, env.get("AETHER_HTTP_PROXY"));
+    }
+
+    @Test
+    public void h2FragmentIsOnlySentWhenEnabled() {
+        assertFalse("fragmenting off is the default; sending the flag asks for something "
+                        + "that was not requested",
+                envOf(config().set(Settings.K_PROTOCOL, "masque")).containsKey("AETHER_MASQUE_H2_FRAGMENT"));
+
+        Map<String, String> on = envOf(config().set(Settings.K_PROTOCOL, "masque")
+                .set(Settings.K_H2_FRAGMENT, true)
+                .set(Settings.K_H2_FRAGMENT_SIZE, "1-3"));
+        assertEquals("1", on.get("AETHER_MASQUE_H2_FRAGMENT"));
+        assertEquals("1-3", on.get("AETHER_MASQUE_H2_FRAGMENT_SIZE"));
+    }
+
+    @Test
+    public void masqueOnlySettingsAreAbsentFromAWireGuardSession() {
+        // Sending MASQUE variables to a WireGuard leg is not inert: it is how a setting
+        // ends up saved, reported as applied, and doing nothing.
+        Map<String, String> env = envOf(config().set(Settings.K_PROTOCOL, "wg")
+                .set(Settings.K_MASQUE_TRANSPORT, "h3")
+                .set(Settings.K_QUIC_V2, true)
+                .set(Settings.K_ECH, "cloudflare"));
+        assertFalse(env.containsKey("AETHER_MASQUE_HTTP2"));
+        assertFalse(env.containsKey("AETHER_QUIC_V2"));
+        assertFalse(env.containsKey("AETHER_ECH"));
     }
 
     @Test

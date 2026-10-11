@@ -50,7 +50,9 @@ public final class TunBuilder {
                                                  boolean chain,
                                                  List<String> excludedRoutes,
                                                  List<String> splitPackages) throws Exception {
-        VpnService.Builder builder = new VpnService.Builder()
+        // VpnService.Builder is an inner class of VpnService, so it has to be constructed
+        // through the service instance rather than instantiated directly.
+        VpnService.Builder builder = service.new Builder()
                 .setSession(sessionName)
                 .setMtu(mtu)
                 // Non-blocking, because the bridge owns the other end and the lifecycle
@@ -105,7 +107,9 @@ public final class TunBuilder {
             // uninstalled throws here, so one bad entry is skipped rather than failing the
             // whole session.
             try {
-                if (service != null) service.addDisallowedApplication(packageName);
+                // On the builder, not the service: addDisallowedApplication is a builder
+                // method, and calling it on the service does not configure the interface.
+                builder.addDisallowedApplication(packageName);
             } catch (Exception ignored) {
                 // package not installed or not visible; skip it
             }

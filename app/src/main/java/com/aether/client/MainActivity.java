@@ -12,8 +12,10 @@ import android.net.VpnService;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -144,10 +146,10 @@ public class MainActivity extends AppCompatActivity {
         navLogsLabel = findViewById(R.id.navLogsLabel);
         navSettingsLabel = findViewById(R.id.navSettingsLabel);
         navAboutLabel = findViewById(R.id.navAboutLabel);
-        navDashboardIcon = ((LinearLayout) navDashboard).getChildAt(0);
-        navLogsIcon = ((LinearLayout) navLogs).getChildAt(0);
-        navSettingsIcon = ((LinearLayout) navSettings).getChildAt(0);
-        navAboutIcon = ((LinearLayout) navAbout).getChildAt(0);
+        navDashboardIcon = findViewById(R.id.navDashboardIcon);
+        navLogsIcon = findViewById(R.id.navLogsIcon);
+        navSettingsIcon = findViewById(R.id.navSettingsIcon);
+        navAboutIcon = findViewById(R.id.navAboutIcon);
     }
 
     private void wireControls() {

@@ -2,6 +2,7 @@ package com.aether.client.ui;
 
 import android.content.Context;
 import android.text.InputType;
+import android.text.Editable;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.CheckBox;
@@ -75,7 +76,7 @@ public final class SettingsScreen {
         if (com.aether.client.core.Protocols.goolModeApplicable(protocol)) {
             spinner(R.string.label_gool_mode, goolLabels(language),
                     valueIndex(com.aether.client.core.Settings.GOOL_MODES, settings.goolMode()),
-                    index -> settings.putString(com.aether.client.core.Settings.K_GOOL_MODES,
+                    index -> settings.putString(com.aether.client.core.Settings.K_GOOL_MODE,
                             com.aether.client.core.Settings.GOOL_MODES[index]));
         }
 
@@ -138,7 +139,7 @@ public final class SettingsScreen {
             if (!settings.dnsLeakProtection()) {
                 warning(R.string.label_dns_leak_off);
             }
-            toggle(R.string.label_ipv6 + " — " + ipv6ModeLabel(language),
+            toggle(getString(R.string.label_ipv6) + " — " + ipv6ModeLabel(language),
                     "tunnel".equals(settings.ipv6Behavior()),
                     value -> settings.putString(com.aether.client.core.Settings.K_IPV6_BEHAVIOR,
                             value ? "tunnel" : "block"));
@@ -253,7 +254,6 @@ public final class SettingsScreen {
 
         MaterialButtonToggleGroup group = new MaterialButtonToggleGroup(context);
         group.setSingleSelection(true);
-        group.setSelectionPadding(0);
         group.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
@@ -311,7 +311,7 @@ public final class SettingsScreen {
         // drop an edit the user already finished typing.
         input.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void afterTextChanged(CharSequence text) {
+            public void afterTextChanged(Editable text) {
                 listener.onValue(text.toString());
             }
         });
@@ -340,7 +340,7 @@ public final class SettingsScreen {
 
         input.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void afterTextChanged(CharSequence text) {
+            public void afterTextChanged(Editable text) {
                 try {
                     listener.onValue(Integer.parseInt(text.toString().trim()));
                 } catch (NumberFormatException ignored) {
@@ -600,6 +600,8 @@ public final class SettingsScreen {
 
     /** Avoids the abstract-method boilerplate of TextWatcher for one method. */
     private abstract static class SimpleTextWatcher implements android.text.TextWatcher {
+        
+
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 

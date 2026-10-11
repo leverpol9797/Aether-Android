@@ -1,29 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Aether Core Client</string>
-    <string name="title_dashboard">Aether Dashboard v2.3.0</string>
-    <string name="status_disconnected">Ready to Connect</string>
-    <string name="status_connecting">Establishing Route...</string>
-    <string name="status_connected">Connected &amp; Protected</string>
-    <string name="status_error">Connection Error</string>
+    <string name="channel_status">Connection status</string>
 
-    <string name="btn_connect">CONNECT</string>
-    <string name="btn_connecting">CONNECTING...</string>
-    <string name="btn_disconnect">DISCONNECT</string>
+    <!-- dashboard -->
+    <string name="mode_vpn">Device VPN</string>
+    <string name="mode_proxy">SOCKS5 Proxy</string>
+    <string name="metric_latency">Latency</string>
+    <string name="metric_uptime">Uptime</string>
+    <string name="metric_port">SOCKS5 port</string>
+    <string name="metric_up">Uploaded</string>
+    <string name="metric_down">Downloaded</string>
+    <string name="metric_protocol">Protocol</string>
+    <string name="metric_transport">Transport</string>
 
-    <string name="mode_socks">SOCKS5 Proxy</string>
-    <string name="mode_vpn">System VPN (TUN)</string>
+    <!-- connection states -->
+    <string name="state_disconnected">Ready to connect</string>
+    <string name="state_starting">Starting the core…</string>
+    <string name="state_scanning">Finding a working path…</string>
+    <string name="state_securing">Securing the tunnel…</string>
+    <string name="state_connected">Connected and protected</string>
+    <string name="state_disconnecting">Disconnecting…</string>
+    <string name="state_error">Connection failed</string>
 
-    <string name="label_latency">Ping (RTT)</string>
-    <string name="label_uptime">Uptime</string>
-    <string name="label_port">SOCKS5 Port</string>
+    <string name="action_connect">CONNECT</string>
+    <string name="action_disconnect">DISCONNECT</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_reset">Reset to defaults</string>
+    <string name="action_close">Close</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_apply">Apply</string>
 
-    <string name="label_protocol">Protocol:</string>
-    <string name="label_transport">MASQUE Transport:</string>
-    <string name="label_scan_mode">Path Scan Mode:</string>
-    <string name="label_socks_port">Local SOCKS5 Port:</string>
-    <string name="label_tun_mtu">TUN MTU:</string>
+    <!-- tabs -->
+    <string name="tab_dashboard">Dashboard</string>
+    <string name="tab_logs">Logs</string>
+    <string name="tab_settings">Settings</string>
+    <string name="tab_about">About</string>
 
-    <string name="terminal_title">Aether Core Live Logs</string>
-    <string name="btn_clear">Clear Logs</string>
+    <!-- settings sections -->
+    <string name="section_protocol">Protocol</string>
+    <string name="section_transport">Transport and network</string>
+    <string name="section_routing">Routing and DNS</string>
+    <string name="section_privacy">Privacy chain</string>
+    <string name="section_endpoints">Custom endpoints</string>
+    <string name="section_tuning">Tuning</string>
+    <string name="section_app">App</string>
+
+    <string name="label_protocol">Protocol</string>
+    <string name="label_scan_mode">Path discovery</string>
+    <string name="label_masque_transport">MASQUE connection method</string>
+    <string name="label_quic_v2">QUIC v2 negotiation</string>
+    <string name="label_gool_mode">gool topology</string>
+    <string name="label_obfuscation">Obfuscation profile</string>
+    <string name="label_ip_mode">IP family</string>
+    <string name="label_log_level">Log verbosity</string>
+    <string name="label_socks_address">SOCKS5 listener</string>
+    <string name="label_remote_listener">Allow LAN access to the listener</string>
+    <string name="label_remote_listener_warn">Anyone on the same network can use your connection through this device.</string>
+    <string name="label_routing_mode">Routing mode</string>
+    <string name="label_mtu">Tunnel MTU</string>
+    <string name="label_dns_leak">Route DNS through the tunnel</string>
+    <string name="label_dns_leak_off">DNS queries will use the underlying network and are not protected.</string>
+    <string name="label_ipv6">IPv6 behaviour</string>
+    <string name="label_route_sniff">Read the hostname from the first bytes</string>
+    <string name="label_route_sniff_ms">Hostname read timeout</string>
+    <string name="label_route_exclusions">Keep these networks off the tunnel</string>
+    <string name="label_split_apps">Apps that bypass the tunnel</string>
+    <string name="label_kill_switch">Block traffic while reconnecting</string>
+    <string name="label_psiphon_transport">Psiphon transport</string>
+    <string name="label_psiphon_region">Egress country</string>
+    <string name="label_peer">Custom endpoint</string>
+    <string name="label_mim_outer">MIM outer endpoint</string>
+    <string name="label_mim_inner">MIM inner endpoint</string>
+    <string name="label_wiw_outer">WARP-in-WARP outer endpoint</string>
+    <string name="label_wiw_inner">WARP-in-WARP inner endpoint</string>
+    <string name="label_wg_keepalive">WireGuard keepalive</string>
+    <string name="label_stall_timeout">Stall watchdog timeout</string>
+    <string name="label_watchdog">Health watchdog</string>
+    <string name="label_quick_reconnect">Reuse pinned endpoints on reconnect</string>
+    <string name="label_auto_connect">Connect when the app opens</string>
+    <string name="label_validate_secs">Validation timeout</string>
+    <string name="label_startup_secs">Startup deadline</string>
+    <string name="label_reconnect_secs">Reconnect delay</string>
+    <string name="label_ech">Encrypted Client Hello</string>
+    <string name="label_h2_fragment">Split the ClientHello over HTTP/2</string>
+    <string name="label_h2_fragment_size">Fragment size</string>
+    <string name="label_h2_fragment_delay">Fragment delay</string>
+    <string name="label_no_data_check">Skip end-to-end data validation</string>
+    <string name="label_upstream">Chain behind another proxy</string>
+    <string name="label_language">Language</string>
+    <string name="label_appearance">Appearance</string>
+    <string name="label_auto_update">Check for app updates</string>
+
+    <!-- logs -->
+    <string name="logs_title">Core logs</string>
+    <string name="logs_empty">No log lines yet.</string>
+    <string name="logs_filter_all">All</string>
+    <string name="logs_filter_warn">Warnings</string>
+    <string name="logs_filter_error">Errors</string>
+    <string name="logs_copied">Logs copied to the clipboard</string>
+    <string name="logs_flushed">Network cache and DNS flushed</string>
+
+    <!-- about / updater -->
+    <string name="about_core">Aether core</string>
+    <string name="about_version">Client version</string>
+    <string name="about_update_check">Check for updates</string>
+    <string name="about_update_none">You are on the latest version</string>
+    <string name="about_update_available">Version %1$s is available</string>
+    <string name="about_update_download">Download and verify</string>
+    <string name="about_update_verify">Verifying the download…</string>
+    <string name="about_update_verified">Checksum verified</string>
+    <string name="about_update_failed">Verification failed; the file was discarded</string>
 </resources>

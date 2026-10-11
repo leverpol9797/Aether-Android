@@ -71,8 +71,54 @@ jobs:
           rm -rf "$tmp"
           find app/src/main/jniLibs -name 'libaether.so' -exec ls -la {} \;
 
+      # The packet tunnel. The Aether core publishes a SOCKS5 listener; something has to
+      # speak IP to the Android TUN descriptor and speak SOCKS5 on the other side. That is
+      # hev-socks5-tunnel, and without this library the app builds and installs fine but
+      # Device VPN mode can never work -- so it is built here rather than assumed.
+      - name: Build the hev-socks5-tunnel packet bridge
+        run: |
+          set -euo pipefail
+          NDK_BUILD="$(find "${ANDROID_SDK_ROOT:-$ANDROID_HOME}/ndk" -name ndk-build 2>/dev/null | sort -V | tail -1)"
+          if [ -z "$NDK_BUILD" ]; then
+            echo "::error::ndk-build was not found; the packet bridge cannot be built"
+            exit 1
+          fi
+          echo "Using ndk-build: $NDK_BUILD"
+
+          work="$(mktemp -d)"
+          # Pinned to 2.16.0: the JNI symbols this app calls (TProxyStartService,
+          # TProxyStopService, TProxyGetStats) are that version's contract.
+          git clone --quiet --branch 2.16.0 --depth 1 --recurse-submodules \
+            https://github.com/heiher/hev-socks5-tunnel.git "$work/hev"
+
+          "$NDK_BUILD" \
+            NDK_PROJECT_PATH="$work/hev" \
+            APP_BUILD_SCRIPT="$work/hev/Android.mk" \
+            NDK_APPLICATION_MK="$work/hev/Application.mk" \
+            'APP_ABI=armeabi-v7a arm64-v8a x86_64' \
+            'APP_CFLAGS=-O3 -DPKGNAME=com/aether/client/tun' \
+            NDK_LIBS_OUT="$work/libs" NDK_OUT="$work/obj" -j4
+
+          for abi in armeabi-v7a arm64-v8a x86_64; do
+            test -f "$work/libs/$abi/libhev-socks5-tunnel.so"
+            cp "$work/libs/$abi/libhev-socks5-tunnel.so" "app/src/main/jniLibs/$abi/"
+          done
+          rm -rf "$work"
+          find app/src/main/jniLibs -name 'libhev-socks5-tunnel.so' -exec ls -la {} \;
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --no-daemon
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: app/build/reports/tests/
+          if-no-files-found: ignore
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace

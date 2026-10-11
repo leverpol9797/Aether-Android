@@ -1,29 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">کلاینت هسته Aether</string>
-    <string name="title_dashboard">داشبورد Aether v2.3.0</string>
-    <string name="status_disconnected">آماده برقراری ارتباط</string>
-    <string name="status_connecting">در حال مسیریابی و اتصال...</string>
-    <string name="status_connected">متصل و محافظت‌شده</string>
-    <string name="status_error">خطا در برقراری ارتباط</string>
+    <string name="channel_status">وضعیت اتصال</string>
 
-    <string name="btn_connect">اتصال</string>
-    <string name="btn_connecting">در حال اتصال...</string>
-    <string name="btn_disconnect">قطع اتصال</string>
+    <!-- dashboard -->
+    <string name="mode_vpn">VPN دستگاه</string>
+    <string name="mode_proxy">پروکسی SOCKS5</string>
+    <string name="metric_latency">تأخیر</string>
+    <string name="metric_uptime">مدت اتصال</string>
+    <string name="metric_port">پورت SOCKS5</string>
+    <string name="metric_up">ارسال</string>
+    <string name="metric_down">دریافت</string>
+    <string name="metric_protocol">پروتکل</string>
+    <string name="metric_transport">انتقال</string>
 
-    <string name="mode_socks">پروکسی SOCKS5</string>
-    <string name="mode_vpn">وی‌پی‌ان سیستمی (TUN)</string>
+    <!-- connection states -->
+    <string name="state_disconnected">آماده برقراری ارتباط</string>
+    <string name="state_starting">در حال اجرای هسته…</string>
+    <string name="state_scanning">در حال یافتن مسیر بدون اختلال…</string>
+    <string name="state_securing">در حال ایمن‌سازی تونل…</string>
+    <string name="state_connected">متصل و محافظت‌شده</string>
+    <string name="state_disconnecting">در حال قطع اتصال…</string>
+    <string name="state_error">اتصال برقرار نشد</string>
 
-    <string name="label_latency">پینگ (RTT)</string>
-    <string name="label_uptime">مدت زمان اتصال</string>
-    <string name="label_port">پورت SOCKS5</string>
+    <string name="action_connect">اتصال</string>
+    <string name="action_disconnect">قطع اتصال</string>
+    <string name="action_cancel">انصراف</string>
+    <string name="action_save">ذخیره</string>
+    <string name="action_reset">بازگشت به پیش‌فرض</string>
+    <string name="action_close">بستن</string>
+    <string name="action_clear">پاک‌سازی</string>
+    <string name="action_copy">کپی</string>
+    <string name="action_apply">اعمال</string>
 
-    <string name="label_protocol">پروتکل ارتباطی:</string>
-    <string name="label_transport">پروتکل انتقال MASQUE:</string>
-    <string name="label_scan_mode">حالت اسکن مسیر (Scan Mode):</string>
-    <string name="label_socks_port">پورت لوکال SOCKS5:</string>
-    <string name="label_tun_mtu">TUN MTU:</string>
+    <!-- tabs -->
+    <string name="tab_dashboard">داشبورد</string>
+    <string name="tab_logs">لاگ‌ها</string>
+    <string name="tab_settings">تنظیمات</string>
+    <string name="tab_about">درباره</string>
 
-    <string name="terminal_title">ترمینال زنده لاگ‌های هسته Aether</string>
-    <string name="btn_clear">پاک‌سازی لاگ‌ها</string>
+    <!-- settings sections -->
+    <string name="section_protocol">پروتکل</string>
+    <string name="section_transport">انتقال و شبکه</string>
+    <string name="section_routing">مسیریابی و DNS</string>
+    <string name="section_privacy">زنجیره حریم خصوصی</string>
+    <string name="section_endpoints">سرورهای سفارشی</string>
+    <string name="section_tuning">تنظیمات پیشرفته</string>
+    <string name="section_app">برنامه</string>
+
+    <string name="label_protocol">پروتکل</string>
+    <string name="label_scan_mode">کشف مسیر</string>
+    <string name="label_masque_transport">روش اتصال MASQUE</string>
+    <string name="label_quic_v2">مذاکره QUIC نسخه ۲</string>
+    <string name="label_gool_mode">توپولوژی gool</string>
+    <string name="label_obfuscation">پروفایل مبهم‌سازی</string>
+    <string name="label_ip_mode">خانواده آی‌پی</string>
+    <string name="label_log_level">جزئیات لاگ</string>
+    <string name="label_socks_address">شنونده SOCKS5</string>
+    <string name="label_remote_listener">اجازه دسترسی شبکه محلی به شنونده</string>
+    <string name="label_remote_listener_warn">هر کسی روی همین شبکه می‌تواند از این دستگاه استفاده کند.</string>
+    <string name="label_routing_mode">حالت مسیریابی</string>
+    <string name="label_mtu">MTU تونل</string>
+    <string name="label_dns_leak">ارسال DNS از داخل تونل</string>
+    <string name="label_dns_leak_off">پرس‌وجوهای DNS از شبکه اصلی ارسال می‌شود و محافظت نمی‌شوند.</string>
+    <string name="label_ipv6">رفتار IPv6</string>
+    <string name="label_route_sniff">خواندن نام میزبان از ابتدای بسته</string>
+    <string name="label_route_sniff_ms">مهلت خواندن نام میزبان</string>
+    <string name="label_route_exclusions">شبکه‌هایی که از تونل خارج بمانند</string>
+    <string name="label_split_apps">برنامه‌هایی که از تونل عبور نکنند</string>
+    <string name="label_kill_switch">مسدود کردن ترافیک هنگام اتصال مجدد</string>
+    <string name="label_psiphon_transport">انتقال سایفون</string>
+    <string name="label_psiphon_region">کشور خروجی</string>
+    <string name="label_peer">سرور سفارشی</string>
+    <string name="label_mim_outer">سرور بیرونی MIM</string>
+    <string name="label_mim_inner">سرور درونی MIM</string>
+    <string name="label_wiw_outer">سرور بیرونی WARP در WARP</string>
+    <string name="label_wiw_inner">سرور درونی WARP در WARP</string>
+    <string name="label_wg_keepalive">ضربان نگه‌دارنده WireGuard</string>
+    <string name="label_stall_timeout">مهلت نگهبان بی‌کاری</string>
+    <string name="label_watchdog">نگهبان سلامت</string>
+    <string name="label_quick_reconnect">استفاده از سرورهای ذخیره‌شده در اتصال مجدد</string>
+    <string name="label_auto_connect">اتصال هنگام باز شدن برنامه</string>
+    <string name="label_validate_secs">مهلت اعتبارسنجی</string>
+    <string name="label_startup_secs">مهلت راه‌اندازی</string>
+    <string name="label_reconnect_secs">تأخیر اتصال مجدد</string>
+    <string name="label_ech">کلاینت‌هیلو رمزنگاری‌شده</string>
+    <string name="label_h2_fragment">قطع کلاینت‌هیلو روی HTTP/2</string>
+    <string name="label_h2_fragment_size">اندازه قطعه‌ها</string>
+    <string name="label_h2_fragment_delay">فاصله قطعه‌ها</string>
+    <string name="label_no_data_check">رد کردن اعتبارسنجی داده</string>
+    <string name="label_upstream">اتصال از طریق پروکسی دیگر</string>
+    <string name="label_language">زبان</string>
+    <string name="label_appearance">ظاهر</string>
+    <string name="label_auto_update">بررسی خودکار نسخه جدید برنامه</string>
+
+    <!-- logs -->
+    <string name="logs_title">لاگ‌های هسته</string>
+    <string name="logs_empty">هنوز لاگی ثبت نشده است.</string>
+    <string name="logs_filter_all">همه</string>
+    <string name="logs_filter_warn">هشدارها</string>
+    <string name="logs_filter_error">خطاها</string>
+    <string name="logs_copied">لاگ‌ها کپی شد</string>
+    <string name="logs_flushed">حافظه شبکه و DNS پاک شد</string>
+
+    <!-- about / updater -->
+    <string name="about_core">هسته Aether</string>
+    <string name="about_version">نسخه برنامه</string>
+    <string name="about_update_check">بررسی نسخه جدید</string>
+    <string name="about_update_none">نسخه شما به‌روز است</string>
+    <string name="about_update_available">نسخه %1$s موجود است</string>
+    <string name="about_update_download">دانلود و بررسی</string>
+    <string name="about_update_verify">در حال بررسی فایل دانلودشده…</string>
+    <string name="about_update_verified">چک‌سام تأیید شد</string>
+    <string name="about_update_failed">بررسی ناموفق بود؛ فایل حذف شد</string>
 </resources>

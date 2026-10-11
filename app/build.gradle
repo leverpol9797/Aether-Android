@@ -16,10 +16,31 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Release APKs are signed only when the keystore secrets are present. Without them the
+    // build still succeeds, but the artifacts are -unsigned and cannot be installed --
+    // which is the honest outcome. An unsigned release nobody can install beats one signed
+    // with a key committed to the repository.
+    signingConfigs {
+        release {
+            def store = System.getenv("AETHER_KEYSTORE")
+            if (store && new File(store).exists()) {
+                storeFile file(store)
+                storePassword System.getenv("AETHER_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("AETHER_KEY_ALIAS")
+                keyPassword System.getenv("AETHER_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            def store = System.getenv("AETHER_KEYSTORE")
+            if (store && new File(store).exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
@@ -52,10 +73,14 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'androidx.preference:preference:1.2.1'
+    implementation 'androidx.work:work-runtime:2.10.0'
+    // org.json is stubbed inside android.jar, so JVM unit tests need the real one.
     implementation 'org.json:json:20231013'
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20231013'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }

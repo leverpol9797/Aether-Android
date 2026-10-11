@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- The updater downloads into shared external storage, so the installer needs a
+         content URI rather than a file path it cannot read. -->
+    <external-files-path
+        name="updates"
+        path="Download/" />
+    <files-path
+        name="internal-updates"
+        path="updates/" />
+</paths>

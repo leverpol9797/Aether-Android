@@ -1,9 +1,12 @@
-vector xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24"
     android:tint="#FFFFFF">
+    <!-- The notification icon is a shield. Notification icons are drawn as a silhouette,
+         so anything that relies on internal contrast disappears once the system tints it. -->
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M12,2L4,5v6c0,5.55 3.84,10.74 8,12 4.16,-1.26 8,-6.45 8,-12V5l-8,-3zM12,7c1.66,0 3,1.34 3,3 0,1.66 -1.34,3 -3,3 -1.66,0 -3,-1.34 -3,-3 0,-1.66 1.34,-3 3,-3z" />

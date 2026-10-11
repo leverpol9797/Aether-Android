@@ -78,7 +78,8 @@ public class CoreEnvironmentTest {
     }
 
     private static Map<String, String> envOf(ConfigSource config) {
-        return new CoreEnvironment(config, new File("/data/aether")).build(1819);
+        return new CoreEnvironment(config, new File("/data/aether"), new File("/data/cache"))
+                .build(1819);
     }
 
     private static FakeConfig config() {
@@ -223,6 +224,48 @@ public class CoreEnvironmentTest {
             assertEquals(protocol + " should send its base leg",
                     Protocols.baseProtocol(protocol),
                     envOf(config().set(Settings.K_PROTOCOL, protocol)).get("AETHER_PROTOCOL"));
+        }
+    }
+
+    /**
+     * TMPDIR has to be the directory that was handed in, and has to exist.
+     *
+     * <p>This was a real startup failure. The scratch path was derived as
+     * {@code dataDir.getParentFile() + "/cache"}, which resolves to {@code filesDir/cache}
+     * -- a directory nothing ever creates. The core touches TMPDIR while starting, before
+     * it logs anything the app can react to, so the session died silently and the only
+     * thing on screen was the core announcing its own exit.
+     *
+     * <p>Deriving a path and hoping it exists is the bug; the fix passes the real cache
+     * directory in. This test pins that TMPDIR is that directory and not a guess.
+     */
+    @Test
+    public void tmpDirIsTheSuppliedCacheDirectoryNotAGuess() {
+        File dataDir = new File("/data/user/0/com.aether.client/files/aether");
+        File cacheDir = new File("/data/user/0/com.aether.client/cache");
+
+        Map<String, String> env = new CoreEnvironment(config(), dataDir, cacheDir).build(1819);
+
+        assertEquals(cacheDir.getAbsolutePath(), env.get("TMPDIR"));
+        // The old derivation, kept as the assertion's contrast case.
+        assertFalse("TMPDIR must not be derived from the working directory's parent",
+                env.get("TMPDIR").equals(
+                        new File(dataDir.getParentFile(), "cache").getAbsolutePath()));
+    }
+
+    /** Everything the core is pointed at must be a path inside the app's own storage. */
+    @Test
+    public void noCorePathPointsOutsideTheAppSandbox() {
+        File dataDir = new File("/data/user/0/com.aether.client/files/aether");
+        File cacheDir = new File("/data/user/0/com.aether.client/cache");
+
+        Map<String, String> env = new CoreEnvironment(config(), dataDir, cacheDir).build(1819);
+
+        for (Map.Entry<String, String> entry : env.entrySet()) {
+            String value = entry.getValue();
+            if (!value.startsWith("/")) continue; // ports and flags are not paths
+            assertTrue(entry.getKey() + " points outside the sandbox: " + value,
+                    value.startsWith("/data/user/0/com.aether.client/"));
         }
     }
 }

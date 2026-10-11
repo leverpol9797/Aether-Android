@@ -118,6 +118,21 @@ public final class CoreProcess {
     }
 
     /**
+     * The core's scratch directory, handed to it as TMPDIR.
+     *
+     * <p>{@code getCacheDir()} rather than a path built from {@link #workingDir()}: the
+     * platform guarantees this one exists, and the core touches TMPDIR during startup
+     * before it logs anything the app could react to.
+     */
+    public File cacheDir() {
+        File dir = context.getCacheDir();
+        if (!dir.exists() && !dir.mkdirs()) {
+            Log.w(TAG, "could not create cache directory " + dir);
+        }
+        return dir;
+    }
+
+    /**
      * The core executable for this device's ABI.
      *
      * <p>It ships as {@code libaether.so} only so the installer unpacks it per ABI and
@@ -216,7 +231,7 @@ public final class CoreProcess {
             awaitPortFree(socksPort, 10_000);
 
             CoreEnvironment environment = new CoreEnvironment(
-                    new Settings(context), workingDir());
+                    new Settings(context), workingDir(), cacheDir());
             Map<String, String> env = environment.build(socksPort);
 
             ProcessBuilder builder = new ProcessBuilder(core.getAbsolutePath());

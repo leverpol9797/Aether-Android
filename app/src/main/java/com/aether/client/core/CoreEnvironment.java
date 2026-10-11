@@ -32,10 +32,19 @@ public final class CoreEnvironment {
 
     private final ConfigSource settings;
     private final File dataDir;
+    private final File cacheDir;
 
-    public CoreEnvironment(ConfigSource settings, File dataDir) {
+    /**
+     * @param dataDir  where the core keeps its identity and config files
+     * @param cacheDir where the core keeps scratch files -- must already exist. Derived
+     *                 from dataDir rather than guessed: {@code dataDir.getParentFile()}
+     *                 is the files dir, which has no "cache" child, and a TMPDIR that
+     *                 does not exist makes the core exit on its first scratch file.
+     */
+    public CoreEnvironment(ConfigSource settings, File dataDir, File cacheDir) {
         this.settings = settings;
         this.dataDir = dataDir;
+        this.cacheDir = cacheDir;
     }
 
     /**
@@ -179,9 +188,12 @@ public final class CoreEnvironment {
             env.put("AETHER_UPSTREAM", upstream);
         }
 
-        // The core writes scratch files relative to TMPDIR; keeping it inside the app
-        // sandbox stops them landing on a world-writable path.
-        env.put("TMPDIR", new File(dataDir.getParentFile(), "cache").getAbsolutePath());
+        // The core writes scratch files relative to TMPDIR, and it does so early -- during
+        // startup, before anything the app can observe. A TMPDIR that does not exist is
+        // therefore not a degraded session but a core that exits immediately. The
+        // platform cache dir always exists; the parent of dataDir does not contain a
+        // "cache" child, which is why it is passed in rather than derived.
+        env.put("TMPDIR", cacheDir.getAbsolutePath());
 
         return env;
     }

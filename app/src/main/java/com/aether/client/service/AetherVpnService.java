@@ -366,7 +366,20 @@ public class AetherVpnService extends VpnService {
 
     private void onCoreExited(int session, int exitCode) {
         if (stopping || session != sessionGeneration) return;
-        publishLog(CoreProcess.LogLevel.ERROR, "Aether core exited with code " + exitCode);
+
+        // Say what was lost, not just that something ended. A core that exits during
+        // startup failed for a reason; the lines above it carry the reason, and this
+        // message is what a user sees when there were no lines.
+        long uptimeMs = System.currentTimeMillis() - core.startedAtMs();
+        publishLog(CoreProcess.LogLevel.ERROR,
+                "Aether core exited with code " + exitCode + " after "
+                        + (uptimeMs / 1000) + "s");
+        if (uptimeMs < 5_000) {
+            publishLog(CoreProcess.LogLevel.WARN,
+                    "The core exited almost immediately, so this is a startup failure rather "
+                            + "than a dropped session. The lines above carry the reason; "
+                            + "if there are none, the binary cannot run on this device.");
+        }
 
         if (!settings.quickReconnect()) {
             fail("The connection dropped unexpectedly (core exit " + exitCode + ").");

@@ -229,8 +229,21 @@ public final class AppUpdater {
                     && !"objects.githubusercontent.com".equalsIgnoreCase(uri.getHost())) {
                 return false;
             }
+            if (repository == null || repository.isEmpty()) return false;
             String path = uri.getPath() == null ? "" : uri.getPath();
-            return path.contains("/releases/download/") || path.contains("/releases/");
+
+            // GitHub serves release assets from its own object store after a redirect,
+            // and that path carries no repository name. Reaching it means github.com
+            // already vetted the asset, and the redirect chain cannot be forged from a
+            // response body, so the repository check below does not apply to it.
+            if ("objects.githubusercontent.com".equalsIgnoreCase(uri.getHost())) {
+                return true;
+            }
+
+            // The repository matters too: any release path on github.com would pass a
+            // host-only check, which would let a tampered response redirect the download
+            // to a different project's asset.
+            return path.contains("/" + repository + "/releases/");
         } catch (Exception malformed) {
             return false;
         }

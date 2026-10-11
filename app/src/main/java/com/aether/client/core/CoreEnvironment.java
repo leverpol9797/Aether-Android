@@ -170,7 +170,14 @@ public final class CoreEnvironment {
         env.put("AETHER_STATS_SECS", "5");
 
         String upstream = settings.upstreamProxy().trim();
-        if (!upstream.isEmpty()) env.put("AETHER_UPSTREAM", upstream);
+        if (!upstream.isEmpty() && chain == Protocols.Chain.NONE) {
+            // Deliberately dropped for a chain: Psiphon or Tor already occupies the
+            // upstream slot, and the core silently picks one of the two. The UI refuses
+            // the combination too; this is the same rule enforced where it matters --
+            // a setting that is only refused in the UI is refused by whichever layer the
+            // user happened to reach it from.
+            env.put("AETHER_UPSTREAM", upstream);
+        }
 
         // The core writes scratch files relative to TMPDIR; keeping it inside the app
         // sandbox stops them landing on a world-writable path.

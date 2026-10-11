@@ -183,15 +183,42 @@ public class CoreEnvironmentTest {
         assertFalse(env.containsKey("AETHER_ECH"));
     }
 
+    /**
+     * The value sent must be one the core's own parser knows.
+     *
+     * <p>An unrecognised value becomes masque with no message, so a wrong spelling looks
+     * like a tunnel that came up on the wrong transport.
+     */
     @Test
     public void everyProtocolProducesAnEnvironmentTheCoreWillAccept() {
+        java.util.List<String> known = java.util.Arrays.asList("masque", "wg", "gool", "mim");
         for (String protocol : Protocols.DISPLAY_ORDER) {
             Map<String, String> env = envOf(config().set(Settings.K_PROTOCOL, protocol));
             String base = env.get("AETHER_PROTOCOL");
-            // Anything the core's parser does not recognise becomes masque with no
-            // message, so the value sent has to be one of the three it knows.
-            assertTrue(protocol + " sent an unrecognised protocol: " + base,
-                    "masque".equals(base) || "wg".equals(base) || "gool".equals(base));
+            assertTrue(protocol + " sent an unrecognised protocol: " + base, known.contains(base));
+        }
+    }
+
+    /**
+     * Smart reaches the core unresolved on purpose.
+     *
+     * <p>The core picks the leg and remembers what worked. Substituting a guess here
+     * would remove the only choice that makes smart mode smart.
+     */
+    @Test
+    public void smartIsPassedThroughForTheCoreToResolve() {
+        assertEquals("smart", envOf(config().set(Settings.K_PROTOCOL, "smart"))
+                .get("AETHER_PROTOCOL"));
+    }
+
+    /** A chained entry names only its inner leg; the outer half is a separate process. */
+    @Test
+    public void everyChainedEntrySendsItsBaseLeg() {
+        for (String protocol : Protocols.DISPLAY_ORDER) {
+            if (Protocols.chain(protocol) == Protocols.Chain.NONE) continue;
+            assertEquals(protocol + " should send its base leg",
+                    Protocols.baseProtocol(protocol),
+                    envOf(config().set(Settings.K_PROTOCOL, protocol)).get("AETHER_PROTOCOL"));
         }
     }
 }

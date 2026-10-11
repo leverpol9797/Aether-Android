@@ -229,7 +229,8 @@ public class AetherVpnService extends VpnService {
     private void establishTunnel(int session, int socksPort) throws Exception {
         String protocol = settings.protocol();
         boolean chain = Protocols.chain(protocol) != Protocols.Chain.NONE;
-        int mtu = new com.aether.client.core.CoreEnvironment(settings, core.workingDir()).effectiveMtu();
+        int mtu = new com.aether.client.core.CoreEnvironment(
+                settings, core.workingDir(), core.cacheDir()).effectiveMtu();
 
         if (!HevBridge.ensureLoaded()) {
             fail("The packet tunnel library is not available for this device architecture.");

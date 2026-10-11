@@ -188,7 +188,12 @@ public final class AppUpdater {
             while ((read = input.read(buffer)) != -1) {
                 builder.append(new String(buffer, 0, read, java.nio.charset.StandardCharsets.UTF_8));
             }
-            return new JSONObject(builder.toString());
+            try {
+                return new JSONObject(builder.toString());
+            } catch (org.json.JSONException malformed) {
+                // A proxy or captive portal returning HTML answers 200 and is not JSON.
+                throw new IOException("the server did not return JSON", malformed);
+            }
         } finally {
             connection.disconnect();
         }

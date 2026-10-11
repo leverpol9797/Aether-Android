@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aether Core Client</string>
+    <string name="title_dashboard">Aether Dashboard v2.3.0</string>
+    <string name="status_disconnected">Ready to Connect</string>
+    <string name="status_connecting">Establishing Route...</string>
+    <string name="status_connected">Connected &amp; Protected</string>
+    <string name="status_error">Connection Error</string>
+
+    <string name="btn_connect">CONNECT</string>
+    <string name="btn_connecting">CONNECTING...</string>
+    <string name="btn_disconnect">DISCONNECT</string>
+
+    <string name="mode_socks">SOCKS5 Proxy</string>
+    <string name="mode_vpn">System VPN (TUN)</string>
+
+    <string name="label_latency">Ping (RTT)</string>
+    <string name="label_uptime">Uptime</string>
+    <string name="label_port">SOCKS5 Port</string>
+
+    <string name="label_protocol">Protocol:</string>
+    <string name="label_transport">MASQUE Transport:</string>
+    <string name="label_scan_mode">Path Scan Mode:</string>
+    <string name="label_socks_port">Local SOCKS5 Port:</string>
+    <string name="label_tun_mtu">TUN MTU:</string>
+
+    <string name="terminal_title">Aether Core Live Logs</string>
+    <string name="btn_clear">Clear Logs</string>
+</resources>

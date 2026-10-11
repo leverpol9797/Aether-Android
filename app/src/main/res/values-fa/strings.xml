@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">کلاینت هسته Aether</string>
+    <string name="title_dashboard">داشبورد Aether v2.3.0</string>
+    <string name="status_disconnected">آماده برقراری ارتباط</string>
+    <string name="status_connecting">در حال مسیریابی و اتصال...</string>
+    <string name="status_connected">متصل و محافظت‌شده</string>
+    <string name="status_error">خطا در برقراری ارتباط</string>
+
+    <string name="btn_connect">اتصال</string>
+    <string name="btn_connecting">در حال اتصال...</string>
+    <string name="btn_disconnect">قطع اتصال</string>
+
+    <string name="mode_socks">پروکسی SOCKS5</string>
+    <string name="mode_vpn">وی‌پی‌ان سیستمی (TUN)</string>
+
+    <string name="label_latency">پینگ (RTT)</string>
+    <string name="label_uptime">مدت زمان اتصال</string>
+    <string name="label_port">پورت SOCKS5</string>
+
+    <string name="label_protocol">پروتکل ارتباطی:</string>
+    <string name="label_transport">پروتکل انتقال MASQUE:</string>
+    <string name="label_scan_mode">حالت اسکن مسیر (Scan Mode):</string>
+    <string name="label_socks_port">پورت لوکال SOCKS5:</string>
+    <string name="label_tun_mtu">TUN MTU:</string>
+
+    <string name="terminal_title">ترمینال زنده لاگ‌های هسته Aether</string>
+    <string name="btn_clear">پاک‌سازی لاگ‌ها</string>
+</resources>

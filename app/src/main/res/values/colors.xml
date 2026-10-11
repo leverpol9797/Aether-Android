@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_dark">#09090b</color>
+    <color name="card_bg">#18181b</color>
+    <color name="card_border">#27272a</color>
+    <color name="primary_cyan">#22d3ee</color>
+    <color name="primary_emerald">#34d399</color>
+    <color name="status_red">#f43f5e</color>
+    <color name="text_white">#f4f4f5</color>
+    <color name="text_gray">#a1a1aa</color>
+</resources>

@@ -1,0 +1,2 @@
+rootProject.name = "AetherAndroid"
+include ':app'

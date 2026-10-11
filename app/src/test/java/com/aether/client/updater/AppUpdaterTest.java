@@ -83,10 +83,21 @@ public class AppUpdaterTest {
     @Test
     public void urlsOutsideTheReleasePathAreRejected() throws Exception {
         java.lang.reflect.Method check = artifactCheck();
-        assertFalse(check.invoke(new AppUpdater(null, "o/r"), "http://example.com/a.apk"));
-        assertFalse(check.invoke(new AppUpdater(null, "o/r"), "https://evil.test/releases/a.apk"));
-        assertTrue(check.invoke(new AppUpdater(null, "o/r"),
-                "https://github.com/o/r/releases/download/v1/a.apk"));
+        AppUpdater updater = new AppUpdater(null, "o/r");
+
+        // Reflection widens a boolean return to Object, so each result is unboxed
+        // explicitly rather than passed straight to assertFalse.
+        assertFalse(accepts(check, updater, "http://example.com/a.apk"));
+        assertFalse(accepts(check, updater, "https://evil.test/releases/a.apk"));
+        assertFalse(accepts(check, updater, "https://github.com/other/repo/releases/download/v1/a.apk"));
+        assertTrue(accepts(check, updater, "https://github.com/o/r/releases/download/v1/a.apk"));
+        assertTrue(accepts(check, updater,
+                "https://objects.githubusercontent.com/github-production/release/a.apk"));
+    }
+
+    private static boolean accepts(java.lang.reflect.Method check, AppUpdater updater, String url)
+            throws Exception {
+        return (Boolean) check.invoke(updater, url);
     }
 
     private static java.lang.reflect.Method artifactCheck() throws Exception {

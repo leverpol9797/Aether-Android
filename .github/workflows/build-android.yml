@@ -1,16 +1,23 @@
-name: Build Aether-Android Release APKs
+name: Build Aether-Android APKs
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aether-android-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Java 17
@@ -19,35 +26,91 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Fetch Aether Core Binaries (v2.3.0)
+      # The core is not vendored in git: it is fetched from the upstream release and
+      # checked against the .sha256 sidecar that release publishes, so a corrupted or
+      # substituted archive fails the build instead of shipping inside the APK.
+      - name: Fetch and verify the Aether v2.3.0 core binaries
+        env:
+          CORE_VERSION: v2.3.0
         run: |
-          mkdir -p app/src/main/jniLibs/arm64-v8a
-          mkdir -p app/src/main/jniLibs/armeabi-v7a
-          mkdir -p app/src/main/jniLibs/x86_64
-          
-          # Download official release of Aether core v1.9.0 / v2.3.0 android builds
-          base='https://github.com/CluvexStudio/Aether/releases/download/v1.9.0'
-          
-          curl -L --fail "$base/aether-android-arm64.tar.gz" -o tmp_arm64.tar.gz || true
-          if [ -f tmp_arm64.tar.gz ]; then
-            tar -xzf tmp_arm64.tar.gz
-            cp $(find . -type f -name aether | head -1) app/src/main/jniLibs/arm64-v8a/libaether.so || true
-            rm -f tmp_arm64.tar.gz
-          fi
+          set -euo pipefail
+          base="https://github.com/CluvexStudio/Aether/releases/download/${CORE_VERSION}"
+          tmp="$(mktemp -d)"
 
-      - name: Grant Execute Permission for Gradle Wrapper
-        run: chmod +x gradlew || true
+          for spec in \
+            "arm64-v8a aether-android-arm64.tar.gz" \
+            "armeabi-v7a aether-android-armv7.tar.gz" \
+            "x86_64 aether-android-x86_64.tar.gz"
+          do
+            set -- $spec
+            abi="$1"; archive="$2"
+            dest="app/src/main/jniLibs/${abi}"
+            mkdir -p "$dest"
 
-      - name: Build Debug APK
+            curl -fsSL "$base/$archive" -o "$tmp/$archive"
+            curl -fsSL "$base/$archive.sha256" -o "$tmp/$archive.sha256"
+
+            # The sidecar is "<hash>  <filename>" or a bare hash; both are accepted.
+            expected="$(awk '{print $1; exit}' "$tmp/$archive.sha256")"
+            actual="$(sha256sum "$tmp/$archive" | cut -d' ' -f1)"
+            if [ "$expected" != "$actual" ]; then
+              echo "::error::${archive} failed its SHA-256 check (expected ${expected}, got ${actual})"
+              exit 1
+            fi
+            echo "${archive}: sha256 ok (${actual})"
+
+            tar -xzf "$tmp/$archive" -C "$tmp"
+            core="$(find "$tmp" -type f -name aether | head -n 1)"
+            test -n "$core"
+            # An ELF executable shipped as a .so: the loader never maps it as a
+            # library, it is extracted and run directly, so the name is only a
+            # packaging convention.
+            cp "$core" "$dest/libaether.so"
+          done
+
+          rm -rf "$tmp"
+          find app/src/main/jniLibs -name 'libaether.so' -exec ls -la {} \;
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Build release APKs (per-ABI + universal)
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Collect APKs
         run: |
-          if [ -f gradlew ]; then
-            ./gradlew assembleDebug --stacktrace
-          else
-            gradle assembleDebug
-          fi
+          set -euo pipefail
+          version="$(grep -oP "versionName '\K[^']+" app/build.gradle)"
+          out="dist"
+          mkdir -p "$out"
+          find app/build/outputs/apk -name '*.apk' -print | while read -r apk; do
+            base="$(basename "$apk")"
+            cp "$apk" "$out/AetherAndroid-v${version}-${base}"
+          done
+          ls -la "$out"
 
-      - name: Upload Debug APK Artifact
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Aether-Android-Debug-APK
-          path: app/build/outputs/apk/debug/*.apk
+          name: Aether-Android-APKs
+          path: dist/*.apk
+          if-no-files-found: error
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/heads/main')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          version="$(grep -oP "versionName '\K[^']+" app/build.gradle)"
+          tag="v${version}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "::error::${tag} already exists; bump versionName in app/build.gradle instead of re-publishing the same tag"
+            exit 1
+          fi
+          gh release create "$tag" dist/*.apk \
+            --title "Aether Android v${version}" \
+            --generate-notes

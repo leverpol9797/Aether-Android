@@ -28,6 +28,18 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    // The core ships as one ELF executable per ABI under jniLibs. Splitting keeps a
+    // device from carrying two or three copies of a binary it can never execute,
+    // and the universal APK stays for sideloading where the ABI is not known yet.
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'arm64-v8a', 'armeabi-v7a', 'x86_64'
+            universalApk true
+        }
+    }
+
     packagingOptions {
         jniLibs {
             useLegacyPackaging true

@@ -493,8 +493,8 @@
                 android:id="@+id/navLogs"
                 style="@style/NavItem">
 
-                    android:id="@+id/navLogsIcon"
                 <ImageView
+                    android:id="@+id/navLogsIcon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_sort_by_size"

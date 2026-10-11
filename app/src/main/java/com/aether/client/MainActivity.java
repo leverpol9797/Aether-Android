@@ -535,8 +535,11 @@ public class MainActivity extends AppCompatActivity {
     private void showAbout() {
         String coreVersion = "2.3.0";
         String abi = Build.SUPPORTED_ABIS.length > 0 ? Build.SUPPORTED_ABIS[0] : "unknown";
+        // BuildConfig.VERSION_NAME would do, but the core's version is the thing worth showing
+        // next to it and the two are independent.
+        String appVersion = "2.3.0";
         String message = getString(R.string.about_core) + ": " + coreVersion
-                + "\n" + getString(R.string.about_version) + ": " + BuildConfig.VERSION_NAME
+                + "\n" + getString(R.string.about_version) + ": " + appVersion
                 + "\nABI: " + abi
                 + "\n" + getString(R.string.label_protocol) + ": "
                 + Protocols.label(settings.protocol(), settings.language());

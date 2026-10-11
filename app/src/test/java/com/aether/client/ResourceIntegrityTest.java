@@ -50,6 +50,40 @@ public class ResourceIntegrityTest {
         return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
     }
 
+    /**
+     * Every element that carries an id has its own tag, not a sibling's.
+     *
+     * <p>An {@code android:id} written above its element's opening tag -- which is what a
+     * line-number insert produces -- is not an XML syntax error, so AAPT accepts the file
+     * and the id simply never reaches R. The symptom is "cannot find symbol: variable
+     * navLogsIcon" in Java, pointing at correct-looking code and a layout nobody opens.
+     */
+    @Test
+    public void noIdIsAttachedToTheWrongElement() throws IOException {
+        List<String> offenders = new ArrayList<>();
+        for (File file : xmlFiles(resDir())) {
+            String[] lines = read(file).split("\n");
+            for (int i = 0; i < lines.length; i++) {
+                String line = lines[i].trim();
+                if (!line.startsWith("android:id=")) continue;
+                boolean attached = false;
+                for (int j = i - 1; j >= 0 && j >= i - 6; j--) {
+                    String above = lines[j].trim();
+                    if (above.startsWith("</")) break;
+                    if (above.startsWith("<") && !above.startsWith("<?")
+                            && !above.startsWith("<!")) {
+                        attached = true;
+                        break;
+                    }
+                }
+                if (!attached) {
+                    offenders.add(file.getName() + ":" + (i + 1) + " " + line);
+                }
+            }
+        }
+        assertTrue("these ids are not attached to an element: " + offenders, offenders.isEmpty());
+    }
+
     @Test
     public void everyResourceFileOpensWithAnXmlDeclaration() throws IOException {
         File root = resDir();

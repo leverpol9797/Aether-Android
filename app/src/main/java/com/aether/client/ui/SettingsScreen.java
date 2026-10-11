@@ -139,7 +139,7 @@ public final class SettingsScreen {
             if (!settings.dnsLeakProtection()) {
                 warning(R.string.label_dns_leak_off);
             }
-            toggle(getString(R.string.label_ipv6) + " — " + ipv6ModeLabel(language),
+            toggle(context.getString(R.string.label_ipv6) + " — " + ipv6ModeLabel(language),
                     "tunnel".equals(settings.ipv6Behavior()),
                     value -> settings.putString(com.aether.client.core.Settings.K_IPV6_BEHAVIOR,
                             value ? "tunnel" : "block"));
@@ -352,8 +352,13 @@ public final class SettingsScreen {
     }
 
     private void toggle(int labelRes, boolean checked, BoolListener listener) {
+        toggle(context.getString(labelRes), checked, listener);
+    }
+
+    /** Overload for a label composed from a resource and a computed state name. */
+    private void toggle(CharSequence label, boolean checked, BoolListener listener) {
         CheckBox box = new CheckBox(context);
-        box.setText(labelRes);
+        box.setText(label);
         box.setTextColor(context.getColor(R.color.text_secondary));
         box.setTextSize(13f);
         box.setChecked(checked);

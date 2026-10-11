@@ -68,6 +68,14 @@ android {
     }
 }
 
+android {
+    // Referenced by the About screen. Without it the field silently does not exist and
+    // the compile fails at the use site rather than here.
+    buildFeatures {
+        buildConfig true
+    }
+}
+
 dependencies {
     implementation 'androidx.core:core:1.15.0'
     implementation 'androidx.appcompat:appcompat:1.7.0'
